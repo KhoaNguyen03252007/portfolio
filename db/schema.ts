@@ -53,6 +53,20 @@ export const messages = pgTable("messages", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const subscriptions = pgTable("subscriptions", {
+  id: serial("id").primaryKey(),
+  stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
+  stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
+  stripeSessionId: varchar("stripe_session_id", { length: 255 }).unique(),
+  stripePriceId: varchar("stripe_price_id", { length: 255 }),
+  customerEmail: varchar("customer_email", { length: 255 }),
+  customerName: varchar("customer_name", { length: 255 }),
+  amountTotal: integer("amount_total"),
+  currency: varchar("currency", { length: 10 }).default("usd"),
+  status: varchar("status", { length: 50 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export type Project = typeof projects.$inferSelect;
 export type NewProject = typeof projects.$inferInsert;
 export type Skill = typeof skills.$inferSelect;
@@ -61,3 +75,6 @@ export type GuestbookEntry = typeof guestbook.$inferSelect;
 export type NewGuestbookEntry = typeof guestbook.$inferInsert;
 export type Message = typeof messages.$inferSelect;
 export type NewMessage = typeof messages.$inferInsert;
+export type Subscription = typeof subscriptions.$inferSelect;
+export type NewSubscription = typeof subscriptions.$inferInsert;
+

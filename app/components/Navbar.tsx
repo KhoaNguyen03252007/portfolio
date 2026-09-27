@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, ArrowUpRight, Database } from "lucide-react";
+import { Menu, X, ArrowUpRight, Database, Sparkles } from "lucide-react";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -31,11 +31,16 @@ export default function Navbar() {
           <li><Link href="#projects" className="nav-link" id="nav-link-projects">Projects</Link></li>
           <li><Link href="#experience" className="nav-link" id="nav-link-experience">Experience</Link></li>
           <li>
-            <Link href="#guestbook" className="nav-link" id="nav-link-guestbook" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <Link href="/services" className="nav-link" id="nav-link-services" style={{ display: "flex", alignItems: "center", gap: "5px", color: "#818cf8", fontWeight: 600 }}>
+              <Sparkles size={14} style={{ color: "#818cf8" }} /> Store &amp; Services
+            </Link>
+          </li>
+          <li>
+            <Link href="/#guestbook" className="nav-link" id="nav-link-guestbook" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
               <Database size={13} style={{ color: "var(--cyan-primary)" }} /> Guestbook
             </Link>
           </li>
-          <li><Link href="#contact" className="nav-link" id="nav-link-contact">Contact</Link></li>
+          <li><Link href="/#contact" className="nav-link" id="nav-link-contact">Contact</Link></li>
         </ul>
 
         <div className="nav-actions">
@@ -101,7 +106,16 @@ export default function Navbar() {
             Experience
           </Link>
           <Link
-            href="#guestbook"
+            href="/services"
+            className="nav-link"
+            onClick={() => setMobileMenuOpen(false)}
+            id="m-nav-link-services"
+            style={{ color: "#818cf8", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}
+          >
+            <Sparkles size={16} /> Services &amp; Store
+          </Link>
+          <Link
+            href="/#guestbook"
             className="nav-link"
             onClick={() => setMobileMenuOpen(false)}
             id="m-nav-link-guestbook"
@@ -109,7 +123,7 @@ export default function Navbar() {
             Guestbook (NeonDB)
           </Link>
           <Link
-            href="#contact"
+            href="/#contact"
             className="nav-link"
             onClick={() => setMobileMenuOpen(false)}
             id="m-nav-link-contact"

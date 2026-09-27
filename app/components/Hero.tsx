@@ -25,14 +25,14 @@ export default function Hero() {
             </p>
 
             <div className="hero-cta" id="hero-cta-buttons">
-              <Link href="#projects" className="btn btn-primary" id="hero-btn-projects">
-                <Layers size={18} /> View Featured Work
+              <Link href="/shop" className="btn btn-primary" id="hero-btn-services" style={{ background: "linear-gradient(135deg, #6366f1, #d946ef)", border: "none" }}>
+                <Sparkles size={18} /> Order Website Services
               </Link>
-              <Link href="#guestbook" className="btn btn-secondary" id="hero-btn-guestbook">
-                <Database size={18} /> NeonDB Guestbook
+              <Link href="#projects" className="btn btn-secondary" id="hero-btn-projects">
+                <Layers size={18} /> Featured Work
               </Link>
               <Link href="#contact" className="btn btn-secondary" id="hero-btn-contact">
-                Get In Touch
+                Contact Me
               </Link>
             </div>
 

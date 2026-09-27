@@ -115,6 +115,30 @@ export async function insertContactMessage(msg: schema.NewMessage) {
   return { success: true, message: newMsg, isLiveDb: false };
 }
 
+export async function insertSubscription(sub: schema.NewSubscription) {
+  if (db) {
+    try {
+      const [inserted] = await db.insert(schema.subscriptions).values(sub).returning();
+      return { success: true, subscription: inserted, isLiveDb: true };
+    } catch (err: any) {
+      console.warn("Failed to insert subscription into live NeonDB:", err.message);
+    }
+  }
+  return { success: true, subscription: sub, isLiveDb: false };
+}
+
+export async function getSubscriptions() {
+  if (db) {
+    try {
+      const results = await db.select().from(schema.subscriptions).orderBy(schema.subscriptions.createdAt);
+      return results.reverse();
+    } catch (err: any) {
+      console.warn("Failed to query subscriptions from NeonDB:", err.message);
+    }
+  }
+  return [];
+}
+
 export async function checkDatabaseConnection(): Promise<{
   connected: boolean;
   message: string;

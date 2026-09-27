@@ -5,6 +5,7 @@ import Skills from "./components/Skills";
 import Projects from "./components/Projects";
 import ExperienceSection from "./components/Experience";
 import Guestbook from "./components/Guestbook";
+import StripeCheckoutSection from "./components/StripeCheckoutSection";
 import Contact from "./components/Contact";
 import DbStatusBadge from "./components/DbStatusBadge";
 
@@ -27,7 +28,9 @@ export default async function HomePage() {
       <Projects projects={projects} />
       <ExperienceSection experiences={experiences} />
       <Guestbook initialEntries={guestbookEntries} />
+      <StripeCheckoutSection />
       <Contact />
     </>
   );
 }
+
