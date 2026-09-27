@@ -6,28 +6,58 @@ import { redirect } from "next/navigation";
 
 export async function createCheckoutSession(priceId?: string) {
   const targetPriceId = priceId || process.env.STRIPE_PRICE_ID;
-
-  if (!targetPriceId) {
-    throw new Error("STRIPE_PRICE_ID is not configured in .env");
-  }
-
   const stripe = getStripe();
   const headerList = await headers();
-  const origin = headerList.get("origin") || "http://localhost:3000";
+  const origin = headerList.get("origin") || "https://portfolio-khoanguyen03252007.vercel.app";
 
-  // Check if the price is a recurring subscription or a one-time payment
-  const price = await stripe.prices.retrieve(targetPriceId);
-  const mode = price.type === "recurring" ? "subscription" : "payment";
+  let line_items;
+  let mode: "payment" | "subscription" = "subscription";
+
+  if (targetPriceId && targetPriceId.startsWith("price_")) {
+    try {
+      const price = await stripe.prices.retrieve(targetPriceId);
+      mode = price.type === "recurring" ? "subscription" : "payment";
+      line_items = [{ price: targetPriceId, quantity: 1 }];
+    } catch {
+      // If price ID does not exist in live mode, gracefully fallback to on-demand subscription line item
+      line_items = [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: 999, // $9.99
+            product_data: {
+              name: "Khoa AI Pro Access",
+              description: "VIP access to Khoa's private developer tools and templates",
+            },
+            recurring: { interval: "month" as const },
+          },
+          quantity: 1,
+        },
+      ];
+      mode = "subscription";
+    }
+  } else {
+    line_items = [
+      {
+        price_data: {
+          currency: "usd",
+          unit_amount: 999,
+          product_data: {
+            name: "Khoa AI Pro Access",
+            description: "VIP access to Khoa's private developer tools and templates",
+          },
+          recurring: { interval: "month" as const },
+        },
+        quantity: 1,
+      },
+    ];
+    mode = "subscription";
+  }
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
-    line_items: [
-      {
-        price: targetPriceId,
-        quantity: 1,
-      },
-    ],
-    mode: mode,
+    line_items,
+    mode,
     success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/cancel`,
   });
@@ -52,14 +82,32 @@ export async function createServiceCheckout({
 }) {
   const stripe = getStripe();
   const headerList = await headers();
-  const origin = headerList.get("origin") || "http://localhost:3000";
+  const origin = headerList.get("origin") || "https://portfolio-khoanguyen03252007.vercel.app";
 
-  // If a specific price ID is passed and valid, use that; otherwise generate price_data on the fly
   let line_items;
   let mode: "payment" | "subscription" = isSubscription ? "subscription" : "payment";
 
   if (priceId && priceId.startsWith("price_")) {
-    line_items = [{ price: priceId, quantity: 1 }];
+    try {
+      const price = await stripe.prices.retrieve(priceId);
+      mode = price.type === "recurring" ? "subscription" : "payment";
+      line_items = [{ price: priceId, quantity: 1 }];
+    } catch {
+      line_items = [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: Math.round(amountInDollars * 100),
+            product_data: {
+              name: serviceName,
+              description: description,
+            },
+            ...(isSubscription ? { recurring: { interval: "month" as const } } : {}),
+          },
+          quantity: 1,
+        },
+      ];
+    }
   } else {
     line_items = [
       {
@@ -70,13 +118,7 @@ export async function createServiceCheckout({
             name: serviceName,
             description: description,
           },
-          ...(isSubscription
-            ? {
-                recurring: {
-                  interval: "month" as const,
-                },
-              }
-            : {}),
+          ...(isSubscription ? { recurring: { interval: "month" as const } } : {}),
         },
         quantity: 1,
       },
