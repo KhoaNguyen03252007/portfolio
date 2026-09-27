@@ -140,6 +140,12 @@ const subscriptionPackages: ServiceTier[] = [
 
 const addOns = [
   {
+    id: "live-test-coffee",
+    title: "☕ Buy Me a Coffee / Live $1 Test",
+    price: 1,
+    desc: "Test live real-money checkout with your real credit/debit card for just $1.00 USD.",
+  },
+  {
     id: "stripe-integration",
     title: "Stripe Checkout & Billing Setup",
     price: 99,
