@@ -8,11 +8,18 @@ const databaseUrl = process.env.DATABASE_URL?.trim();
 // Check if a real DATABASE_URL is provided
 export const isConfigured = Boolean(databaseUrl && databaseUrl.startsWith("postgres"));
 
-// Export Drizzle client if configured
-export const db = isConfigured
-  ? drizzle(neon(databaseUrl!), { schema })
-  : null;
+let dbClient = null;
+if (isConfigured) {
+  try {
+    dbClient = drizzle(neon(databaseUrl!), { schema });
+  } catch (error) {
+    console.error("Failed to initialize Neon DB client. Is DATABASE_URL valid?", error);
+    dbClient = null;
+  }
+}
 
+// Export Drizzle client if configured
+export const db = dbClient;
 // In-memory runtime state for development fallback
 const fallbackState = {
   projects: initialProjects.map((p, idx) => ({ ...p, id: idx + 1, createdAt: new Date() })),
